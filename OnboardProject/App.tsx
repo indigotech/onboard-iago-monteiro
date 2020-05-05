@@ -1,14 +1,7 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
 
 import React from 'react';
+import {useState} from 'react';
+
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,103 +9,130 @@ import {
   View,
   Text,
   StatusBar,
+  TextInput,
+  Button,
+  TouchableOpacity,
 } from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 declare const global: {HermesInternal: null | {}};
 
-const App = () => {
+const App : React.FC = () => {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [hasEmailError, setHasEmailError] = useState(false);
+  const [hasPasswordError, setHasPasswordError] = useState(false);
+
+  function handleLogin(){
+    const emailOk : Boolean = checkEmailFormat();
+    const passwordOk : Boolean = checkPasswordFormat();
+
+    if(emailOk && passwordOk){
+      console.log("Both fields good");
+    }
+    else{
+      console.log("Problem in fields.");
+    }
+  }
+
+  function checkPasswordFormat(){
+
+    if(password.length < 7){
+      setErrorMessage("Password too short");
+      setHasPasswordError(true);
+      return false;
+    }
+
+    const re = new RegExp('^(?:[0-9]+[a-z]|[a-z]+[0-9])[a-z0-9]*$')
+    if(re.test(password)){
+      setHasPasswordError(false);
+      return true;
+    }
+    setErrorMessage("Invalid password format. Should have at least one digit and one letter.");
+    setHasPasswordError(true);
+    return false;
+  }
+
+  function checkEmailFormat() : Boolean{
+
+    const re = new RegExp('^[a-z0-9.]+@[a-z0-9]+\.(com)')
+    if(re.test(email)){
+      setHasEmailError(false);
+      return true;
+    }
+    setErrorMessage("Invalid E-mail format.");
+    setHasEmailError(true);
+    return false;
+
+  }
+
   return (
-    <>
-      
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          {/* <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )} */}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Hello, World!</Text>
-              {/* <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.tsx</Text> to change
-                this screen and then come back to see your edits.
-              </Text> */}
-            </View>
-            {/* <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View> */}
+        <View style={styles.container}> 
+          <Text style={styles.pageTitle}>Bem-vindo à Taqtile!</Text> 
+        <View>
+          <Text style={styles.inputName}>E-mail</Text>
+        </View>
+        <TextInput style={styles.textInput} onChangeText={(value) => setEmail(value)}/>    
+        <View>
+          <Text style={styles.inputName}>Senha</Text>
+        </View>
+        <TextInput style={styles.textInput} onChangeText={(value) => setPassword(value)}/>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={{fontWeight: 'bold', color:'white'}}>
+              Entrar
+            </Text>
+        </TouchableOpacity>
+
+        <View style={{width:'80%', alignItems:'center'}}>
+          <Text style={styles.inputName}>{(hasPasswordError || hasEmailError) ? errorMessage : ""}</Text>
+        </View>
            
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+        
+      </View>   
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  
+  container: {
+    flex:1,
+    height: '60%',
+    alignItems:'center',
+    backgroundColor: '#EEEEEE',
+    justifyContent:'center'
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  button: {
+    alignItems: 'center',
+    borderRadius: 15,
+    backgroundColor: 'purple',
+    width:'80%',
+    marginTop: 30,
+    paddingVertical: 10
   },
-  body: {
-    backgroundColor: Colors.white,
+  pageTitle: {
+    alignItems: 'center',
+    fontSize: 26,
+    fontWeight: 'bold'
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  inputName: {
+    fontSize: 16,
+    marginTop: 20
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+  textInput: {
+    borderRadius: 15,
+    borderColor: 'grey',
+    borderBottomWidth: 3,
+    borderTopWidth: 3,
+    borderRightWidth: 10,
+    borderLeftWidth: 10,
+    paddingLeft: 15,
+    backgroundColor: '#FFFFFF',
+    width: '90%',
+    marginTop: 5
+  }
 });
+
 
 export default App;
