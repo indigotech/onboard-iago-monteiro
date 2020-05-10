@@ -1,12 +1,13 @@
 import {LoginPage} from './Pages/Login/LoginPage';
 import {UsersPage} from './Pages/Users/UsersPage';
-
-import {name as appName} from './app.json';
-
 import { Navigation } from "react-native-navigation";
 
+if (__DEV__) {
+    require('react-devtools');
+}
+
 Navigation.registerComponent('Login Page', () => LoginPage);
-Navigation.registerComponent('Blank', () => UsersPage);
+Navigation.registerComponent('Users', () => UsersPage);
 
 LoginPage.options = {
     topBar: {
