@@ -2,24 +2,22 @@ import { InMemoryCache, HttpLink, ApolloClient } from 'apollo-boost'
 import { setContext } from 'apollo-link-context';
 import gql from 'graphql-tag'
 
-const loginMutation = (email: string, password: string) => {
-    return (
-        gql`mutation Login{
-                login(data: {email: "${email}" password: "${password}"}){
+const loginMutation = 
+        gql`mutation Login($data:LoginInputType!){
+                login(data: $data){
                     token
                     user{
                         id
                         name
                     }
                 }
-            }`
-    );
-}
+            }`;
+    
 
-const usersQuery = (offset: number, limit: number) => {
-    return (
-        gql`query users{
-                users(pageInfo: {offset: ${offset}, limit: ${limit}}){
+
+const usersQuery = 
+        gql`query Users($pageInfo:PageInputType!){
+                users(pageInfo: $pageInfo){
                     nodes{
                         id
                         name
@@ -36,9 +34,9 @@ const usersQuery = (offset: number, limit: number) => {
                         hasPreviousPage
                     }
                 }
-            }`
-    );
-}
+            }`;
+
+
 
 const cache = new InMemoryCache();
 const link = new HttpLink({

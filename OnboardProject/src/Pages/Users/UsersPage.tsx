@@ -5,7 +5,7 @@ import { clientWithAuth } from '../../Utils/graphQlComm';
 import { usersQuery } from '../../Utils/graphQlComm';
 import { styles } from './UsersStyles';
 
-interface UserType {
+export interface UserType {
     id: string,
     name: string,
     phone: string,
@@ -13,6 +13,18 @@ interface UserType {
     email: string,
     role: string,
     __typename: string
+}
+interface UsersResponseType{
+    users: {
+        nodes: UserType[],
+        count: number,
+        pageInfo: {
+            offset: number,
+            limit: number,
+            hasNextPage: boolean,
+            hasPreviousPage: boolean
+        }
+    }
 }
 interface UsersPageState {
     users: UserType[],
@@ -27,7 +39,7 @@ class UsersPage extends React.Component<{}, UsersPageState> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            users: [{ id: '', name: '', phone: '', birthDate: '', email: '', role: '' , __typename: ''}],
+            users: [],
             currentPage: 0,
             usersCount: 0,
             isLastPage: false
@@ -38,35 +50,38 @@ class UsersPage extends React.Component<{}, UsersPageState> {
 
     fetchData = () => {
 
-        if(this.state.isLastPage){
+        if (this.state.isLastPage) {
             return;
         }
 
         const limit = 10;
         const offset = this.state.currentPage * limit;
 
-        const query = usersQuery(offset, limit);
+        const query = usersQuery;
 
         retrieveData("AUTH_TOKEN").then((token) => {
 
-            this.setState((state,props) => ({currentPage: state.currentPage + 1}));
+            this.setState((state, props) => ({ currentPage: state.currentPage + 1 }));
 
             let currentUsers = [...this.state.users];
 
-            clientWithAuth(token).query({ query: query }).then((result) => {
+            clientWithAuth(token).query<UsersResponseType>({
+                query: query,
+                variables: {pageInfo: { offset, limit }} 
+            }).then((result) => {
 
                 result.data.users.nodes.map((user: UserType) => {
                     currentUsers.push(user);
                 });
 
-                this.setState({ users: currentUsers.slice(1), usersCount: result.data.users.count });
-                this.setState({isLastPage: !result.data.users.pageInfo.hasNextPage})
-                
+                this.setState({ users: currentUsers, usersCount: result.data.users.count });
+                this.setState({ isLastPage: !result.data.users.pageInfo.hasNextPage })
+
             }).catch((erro) => {
                 console.log(erro);
             });
         });
-        
+
     }
 
     render() {
@@ -82,13 +97,15 @@ class UsersPage extends React.Component<{}, UsersPageState> {
             )
         });
 
-        const loadMoreButtonColor = {color: 
-            (this.state.isLastPage) ? 'grey' : 'blue'};
+        const loadMoreButtonColor = {
+            color:
+                (this.state.isLastPage) ? 'grey' : 'blue'
+        };
 
         return (
             <ScrollView>
                 {usersData}
-                <Text onPress={this.fetchData} style={[styles.loadMoreButton,loadMoreButtonColor]}>
+                <Text onPress={this.fetchData} style={[styles.loadMoreButton, loadMoreButtonColor]}>
                     Load More
                 </Text>
             </ScrollView>

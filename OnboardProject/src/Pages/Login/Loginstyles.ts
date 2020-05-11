@@ -11,12 +11,10 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        
         fontWeight: 'bold',
         color: 'white',
         width: '80%',
         marginTop: 30,
-        
     },
     buttonText:{
         fontWeight: 'bold',
@@ -24,6 +22,12 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 70,
         borderRadius: 15,
+    },
+    buttonTextLoading: { 
+        backgroundColor: 'grey' 
+    },
+    buttonTextNotLoading: { 
+        backgroundColor: '#4d089a' 
     },
     pageTitle: {
         alignItems: 'center',
