@@ -1,40 +1,39 @@
-/**
- * @format
- */
+import {LoginPage} from './Pages/Login/LoginPage';
+import {UsersPage} from './Pages/Users/UsersPage';
+import { Navigation } from "react-native-navigation";
 
-import {AppRegistry} from 'react-native';
-import {App} from './App';
-import {name as appName} from './app.json';
+if (__DEV__) {
+    require('react-devtools');
+}
 
-// import { ApolloProvider } from 'react-apollo';
-// import ApolloClient from 'apollo-client';
+Navigation.registerComponent('Login Page', () => LoginPage);
+Navigation.registerComponent('Users', () => UsersPage);
 
-// const client = new ApolloClient({
-//   uri: 'https://tq-template-server-sample.herokuapp.com/graphql',
-// });
+LoginPage.options = {
+    topBar: {
+      title: {
+        text: 'Login',
+        color: 'white'
+      },
+      background: {
+        color: '#4d089a'
+      }
+    }
+  }
 
+Navigation.events().registerAppLaunchedListener(async () => {
+    Navigation.setRoot({
+      root: {
+        stack: {
+          children: [
+            {
+              component: {
+                name: "Login Page"
+              }
+            }
+          ]
+        }
+      }
+    });
+  });
 
-
-// const Applic = () => (
-//   <ApolloProvider client={client}>
-//       <App/>
-//   </ApolloProvider>
-// );
-
-// AppRegistry.registerComponent(appName, () => Applic);
-
-// import ApolloClient from 'apollo-boost';
-// import { ApolloProvider } from '@apollo/react-hooks';
-
-// const Client = () => {
-//     const client = new ApolloClient({
-//         uri: 'https://48p1r2roz4.sse.codesandbox.io',
-//       });
-
-//   return (
-//     <ApolloProvider client={client}>
-//       <App />
-//     </ApolloProvider>)
-// }
-
-AppRegistry.registerComponent(appName, () => App);

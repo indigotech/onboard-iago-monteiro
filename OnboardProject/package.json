@@ -7,17 +7,20 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "react-devtool": "react-devtools"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "apollo-boost": "^0.4.7",
     "apollo-client": "^2.6.8",
+    "apollo-link-context": "^1.0.20",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
     "react": "16.11.0",
     "react-apollo": "^3.1.5",
-    "react-native": "0.62.2"
+    "react-native": "0.62.2",
+    "react-native-navigation": "^6.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
@@ -32,8 +35,9 @@
     "eslint": "^6.5.1",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.58.0",
-    "react-test-renderer": "16.11.0",
     "prettier": "^2.0.4",
+    "react-devtools": "^4.6.0",
+    "react-test-renderer": "16.11.0",
     "typescript": "^3.8.3"
   },
   "jest": {
