@@ -5,19 +5,15 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { client, loginMutation } from '../../Utils/graphQlComm';
+import { client } from '../../Utils/GQL/clients';
 import { storeData } from '../../Utils/LocalStorage';
 import { Navigation } from 'react-native-navigation';
 import { styles } from './Loginstyles';
-import {UserType} from '../Users/UsersPage';
+import { LoginResponse} from '../../Utils/GQL/types';
+import { loginMutation } from '../../Utils/GQL/tags';
 import {checkEmailFormat, checkPasswordFormat} from '././LoginInputValidation';
 
-interface LoginResponse{
-  login: {
-    token:string,
-    user: UserType
-  }
-}
+
 
 interface LoginState {
   email: string,
@@ -98,10 +94,10 @@ class LoginPage extends React.Component<LoginProps, LoginState>{
     }).finally(() => {
       this.setState({ isLoading: false });
     });
-
-    
-
   }
+
+  onEmailChange = (value:string) => this.setState({ email: value });
+  onPasswordChange = (value:string) => this.setState({ password: value });
 
   render() {
 
@@ -122,11 +118,11 @@ class LoginPage extends React.Component<LoginProps, LoginState>{
         <View>
           <Text style={styles.inputName}>E-mail</Text>
         </View>
-        <TextInput style={styles.textInput} onChangeText={(value) => this.setState({ email: value })} />
+        <TextInput style={styles.textInput} onChangeText={this.onEmailChange} />
         <View>
           <Text style={styles.inputName}>Senha</Text>
         </View>
-        <TextInput style={styles.textInput} onChangeText={(value) => this.setState({ password: value })}
+        <TextInput style={styles.textInput} onChangeText={this.onPasswordChange}
           secureTextEntry={true} />
         <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
           <Text style={buttonTextStyles}>

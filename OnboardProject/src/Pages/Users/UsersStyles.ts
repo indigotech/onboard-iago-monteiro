@@ -1,5 +1,10 @@
 import {StyleSheet} from 'react-native';
 
+export const getLoadMoreButtonColor = (isLastPage:boolean) => {
+    const color =  isLastPage ? 'grey' : 'blue';
+    return {color};
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1

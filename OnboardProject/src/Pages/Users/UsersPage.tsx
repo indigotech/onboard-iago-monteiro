@@ -1,38 +1,15 @@
 import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
-import { retrieveData } from '../../Utils/LocalStorage';
-import { clientWithAuth } from '../../Utils/graphQlComm';
-import { usersQuery } from '../../Utils/graphQlComm';
-import { styles } from './UsersStyles';
+import {getUsers} from '../../Utils/GQL/getUsers';
+import { UserType } from '../../Utils/GQL/types';
+import { styles, getLoadMoreButtonColor } from './UsersStyles';
 
-export interface UserType {
-    id: string,
-    name: string,
-    phone: string,
-    birthDate: string,
-    email: string,
-    role: string,
-    __typename: string
-}
-interface UsersResponseType{
-    users: {
-        nodes: UserType[],
-        count: number,
-        pageInfo: {
-            offset: number,
-            limit: number,
-            hasNextPage: boolean,
-            hasPreviousPage: boolean
-        }
-    }
-}
 interface UsersPageState {
     users: UserType[],
     currentPage: number,
     isLastPage: boolean,
     usersCount: number
 }
-
 
 class UsersPage extends React.Component<{}, UsersPageState> {
 
@@ -48,7 +25,7 @@ class UsersPage extends React.Component<{}, UsersPageState> {
         this.fetchData();
     }
 
-    fetchData = () => {
+    private fetchData = () => {
 
         if (this.state.isLastPage) {
             return;
@@ -57,30 +34,53 @@ class UsersPage extends React.Component<{}, UsersPageState> {
         const limit = 10;
         const offset = this.state.currentPage * limit;
 
-        const query = usersQuery;
-
-        retrieveData("AUTH_TOKEN").then((token) => {
-
-            this.setState((state, props) => ({ currentPage: state.currentPage + 1 }));
+        getUsers(offset,limit).then((result) => {
+            console.log("Result is back.");
 
             let currentUsers = [...this.state.users];
-
-            clientWithAuth(token).query<UsersResponseType>({
-                query: query,
-                variables: {pageInfo: { offset, limit }} 
-            }).then((result) => {
-
-                result.data.users.nodes.map((user: UserType) => {
-                    currentUsers.push(user);
-                });
-
-                this.setState({ users: currentUsers, usersCount: result.data.users.count });
-                this.setState({ isLastPage: !result.data.users.pageInfo.hasNextPage })
-
-            }).catch((erro) => {
-                console.log(erro);
+            
+            result.data.users.nodes.map((user: UserType) => {
+                currentUsers.push(user);
             });
-        });
+            
+            this.setState((state) => ({
+                users: currentUsers, 
+                usersCount: result.data.users.count,
+                isLastPage: !result.data.users.pageInfo.hasNextPage,
+                currentPage: state.currentPage + 1
+            }));
+
+        }).catch((erro) => {
+            console.log(erro);
+        })
+
+        // retrieveData("AUTH_TOKEN").then((token) => {
+
+        //     let currentUsers = [...this.state.users];
+
+        //     clientWithAuth(token).query<UsersResponseType>({
+        //         query: query,
+        //         variables: {pageInfo: { offset, limit }} 
+        //     }).then((result) => {
+
+        //         result.data.users.nodes.map((user: UserType) => {
+        //             currentUsers.push(user);
+        //         });
+
+        //         // this.setState({ users: currentUsers, usersCount: result.data.users.count });
+        //         // this.setState({ isLastPage: !result.data.users.pageInfo.hasNextPage })
+        //         // this.setState((state, props) => ({ currentPage: state.currentPage + 1 }));
+        //         this.setState((state) => ({
+        //             users: currentUsers, 
+        //             usersCount: result.data.users.count,
+        //             isLastPage: !result.data.users.pageInfo.hasNextPage,
+        //             currentPage: state.currentPage + 1
+        //         }));
+
+        //     }).catch((erro) => {
+        //         console.log(erro);
+        //     });
+        // });
 
     }
 
@@ -97,10 +97,7 @@ class UsersPage extends React.Component<{}, UsersPageState> {
             )
         });
 
-        const loadMoreButtonColor = {
-            color:
-                (this.state.isLastPage) ? 'grey' : 'blue'
-        };
+        const loadMoreButtonColor = getLoadMoreButtonColor(this.state.isLastPage);
 
         return (
             <ScrollView>
