@@ -1,5 +1,5 @@
-import {LoginPage} from './Pages/Login/LoginPage';
-import {UsersPage} from './Pages/Users/UsersPage';
+import {LoginPage} from './src/Pages/Login/LoginPage';
+import {UsersPage} from './src/Pages/Users/UsersPage';
 import { Navigation } from "react-native-navigation";
 
 if (__DEV__) {
