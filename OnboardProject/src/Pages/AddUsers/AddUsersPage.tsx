@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, Button, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Button, ScrollView, Alert } from 'react-native';
 import React from 'react';
 import { styles, getFormButtonTextAndColor } from '../GlobalStyles';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { createUser } from '../../Utils/GQL/createUser';
 import { UserInputType } from '../../Utils/GQL/types';
 import {
   checkEmailFormat,
@@ -11,6 +12,11 @@ import {
   checkBirthDate,
   checkName
 } from '../../Utils/InputValidation';
+import { Navigation } from 'react-native-navigation';
+
+interface AddUsersPageProps {
+  componentId: string
+}
 
 interface AddUsersPageState {
   user: UserInputType,
@@ -21,9 +27,9 @@ interface AddUsersPageState {
   birthDateButtonTitle: string
 }
 
-class AddUsersPage extends React.Component<{}, AddUsersPageState>{
+class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>{
 
-  constructor(props: {}) {
+  constructor(props: AddUsersPageProps) {
 
     super(props);
     this.state = {
@@ -42,6 +48,67 @@ class AddUsersPage extends React.Component<{}, AddUsersPageState>{
       return;
     }
 
+    const error = this.getHasError();
+
+    if(error){
+
+      this.setState({
+        errorMessage: error
+      });
+
+      return;
+    }
+
+    this.setState({
+      errorMessage: "",
+      isLoading: true
+    });
+
+    createUser(this.state.user).then((result) => {
+
+      if(result.data){
+
+        Alert.alert("Sucesso", `Usuário criado com id ${result.data?.createUser?.id}`);
+
+        Navigation.push(this.props.componentId, {
+          component: {
+            name: 'Users',
+            options: {
+              topBar: {
+                title: {
+                  text: 'Usuários'
+                }
+              }
+            }
+          }
+        })
+
+      }
+      else{
+
+        if(result.errors?.[0]?.message)
+          this.setState({
+            errorMessage: result.errors?.[0]?.message
+          });
+      }
+
+    }).catch((erro) => {
+
+      this.setState({
+        errorMessage: erro.graphQLErrors?.[0]?.message || "Houve um erro"
+      });
+
+    }).finally(() => {
+
+      this.setState({
+        isLoading: false
+      });
+
+    });
+  }
+
+  private getHasError = () => {
+
     const invalidEmail = checkEmailFormat(this.state.user.email);
     const invalidPassword = checkPasswordFormat(this.state.user.password);
     const invalidRole = checkRole(this.state.user.role);
@@ -49,20 +116,8 @@ class AddUsersPage extends React.Component<{}, AddUsersPageState>{
     const invalidBirthDate = checkBirthDate(this.state.date);
     const invalidName = checkName(this.state.user.name);
 
-    if (invalidEmail || invalidPassword || invalidRole || invalidPhone || invalidBirthDate || invalidName) {
-
-      this.setState({
-        errorMessage:
-          (invalidName || invalidEmail || invalidPassword || invalidPhone
-            || invalidBirthDate || invalidRole || "")
-      });
-
-      return;
-    }
-    else{
-
-      this.setState({errorMessage: ""});
-    }
+    return (invalidName || invalidEmail || invalidPassword || invalidPhone
+        || invalidBirthDate || invalidRole || "");
   }
 
   private showDatePicker = () => {
@@ -73,22 +128,34 @@ class AddUsersPage extends React.Component<{}, AddUsersPageState>{
   private handleDateChange = (event: Event, selectedDate?: Date) => {
 
     const currentDate = selectedDate || this.state.date;
-    const formattedDate = this.currentDateFormatted(currentDate);
+    const formattedDateRequest = this.currentDateFormatted(currentDate);
+    const formattedDateButton = this.currentDateFormatted(currentDate, true);
 
-    this.setState({
-      date: currentDate,
-      birthDateButtonTitle: formattedDate,
-      showDatePicker: false
+    this.setState((prevState) => {
+      let user = {
+        ...prevState.user,
+        birthDate: formattedDateRequest
+      }
+      return {
+        date: currentDate,
+        birthDateButtonTitle: formattedDateButton,
+        showDatePicker: false,
+        user: user
+      }
     });
   }
 
-  private currentDateFormatted = (date:Date) => {
+  private currentDateFormatted = (date:Date, button:boolean = false) => {
 
     const day  = date.getDate().toString().padStart(2, '0');
     const month  = (date.getMonth()+1).toString().padStart(2, '0');
     const year = date.getFullYear();
 
-    return day+"/"+month+"/"+year;
+    if(button){
+      return day+"/"+month+"/"+year;
+    }
+
+    return year+"-"+month+"-"+day;
   }
 
   private handleNameChange = (value: string) => {
