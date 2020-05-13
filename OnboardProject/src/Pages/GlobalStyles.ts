@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        height: '60%',
+        marginVertical:0,
+        width:'100%',
         alignItems: 'center',
         backgroundColor: '#EEEEEE',
         justifyContent: 'center'
@@ -32,25 +33,30 @@ const styles = StyleSheet.create({
         paddingHorizontal: 70,
         borderRadius: 15,
     },
-    buttonTextLoadingColor: { 
-        backgroundColor: 'grey' 
+    buttonTextLoadingColor: {
+        backgroundColor: 'grey'
     },
-    buttonTextNotLoadingColor: { 
-        backgroundColor: '#4d089a' 
+    buttonTextNotLoadingColor: {
+        backgroundColor: '#4d089a'
     },
     pageTitle: {
-        alignItems: 'center',
-        fontSize: 26,
+        alignItems: 'flex-start',
+        flexDirection:'column',
+        fontSize: 30,
         fontWeight: 'bold'
     },
+    inputNameView: {
+        width:'85%'
+    },
     inputName: {
-        fontSize: 16,
+        marginHorizontal:0,
+        fontSize: 20,
         marginTop: 20
     },
     feedbackMessageError: {
         fontSize: 16,
         marginTop: 20,
-        color: 'red' 
+        color: 'red'
     },
     textInput: {
         borderRadius: 15,

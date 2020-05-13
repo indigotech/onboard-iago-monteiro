@@ -8,10 +8,10 @@ import {
 import { client } from '../../Utils/GQL/clients';
 import { storeData } from '../../Utils/LocalStorage';
 import { Navigation } from 'react-native-navigation';
-import { styles, getFormButtonTextAndColor } from '../GlobalStyles/GlobalStyles';
+import { styles, getFormButtonTextAndColor } from '../GlobalStyles';
 import { LoginResponse} from '../../Utils/GQL/types';
 import { loginMutation } from '../../Utils/GQL/tags';
-import {checkEmailFormat, checkPasswordFormat} from '././LoginInputValidation';
+import {checkEmailFormat, checkPasswordFormat} from '../../Utils/InputValidation';
 
 interface LoginState {
   email: string,
@@ -44,11 +44,11 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
       return;
     }
 
-    const emailInvalido = checkEmailFormat(this.state.email);
-    const passwordInvalida = checkPasswordFormat(this.state.password);
+    const invalidEmail = checkEmailFormat(this.state.email);
+    const invalidPassword = checkPasswordFormat(this.state.password);
 
-    if(emailInvalido || passwordInvalida){
-      this.setState({hasErrorMessage: true, errorMessage: (emailInvalido || passwordInvalida || "")});
+    if(invalidEmail || invalidPassword){
+      this.setState({hasErrorMessage: true, errorMessage: (invalidEmail || invalidPassword || "")});
 
       return;
     }
@@ -106,11 +106,11 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
     return (
       <View style={styles.container}>
         <Text style={styles.pageTitle}>Bem-vindo à Taqtile!</Text>
-        <View>
+        <View style={styles.inputNameView}>
           <Text style={styles.inputName}>E-mail</Text>
         </View>
         <TextInput style={styles.textInput} onChangeText={this.onEmailChange} />
-        <View>
+        <View style={styles.inputNameView}>
           <Text style={styles.inputName}>Senha</Text>
         </View>
         <TextInput style={styles.textInput} onChangeText={this.onPasswordChange}

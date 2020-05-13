@@ -1,3 +1,11 @@
+export interface UserInputType {
+    name: string,
+    phone: string,
+    birthDate: string,
+    email: string,
+    role: string,
+    password:string
+}
 
 export interface UserType {
     id: string,
