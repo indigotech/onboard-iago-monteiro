@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import React from 'react';
 import { getUsers } from '../../Utils/GQL/getUsers';
 import { UserType } from '../../Utils/GQL/types';
@@ -41,11 +41,7 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
     getUsers(offset, limit).then((result) => {
 
-      let currentUsers = [...this.state.users];
-
-      result.data.users.nodes.map((user: UserType) => {
-        currentUsers.push(user);
-      });
+      const currentUsers = this.state.users.concat(result.data.users.nodes);
 
       this.setState((state) => ({
         users: currentUsers,
@@ -56,11 +52,11 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
     }).catch((erro) => {
 
-      console.log(erro);
+      Alert.alert("Houve um erro para obter usuários", erro.graphQLErrors?.[0]?.message);
     })
   }
 
-  handleAddUser = () => {
+  private handleAddUser = () => {
 
     Navigation.push(this.props.componentId, {
       component: {
