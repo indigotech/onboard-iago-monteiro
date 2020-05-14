@@ -16,8 +16,11 @@ export interface UserType {
     role: string,
     __typename: string
 }
+export interface createUserResponseType {
+  createUser: UserType
+}
 
-export interface UsersResponseType{
+export interface PaginatedUsersType{
     users: {
         nodes: UserType[],
         count: number,
