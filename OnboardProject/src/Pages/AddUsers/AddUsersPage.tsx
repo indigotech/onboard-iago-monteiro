@@ -2,7 +2,6 @@ import { View, Text, TextInput, TouchableOpacity, Button, ScrollView } from 'rea
 import React from 'react';
 import { styles, getFormButtonTextAndColor } from '../GlobalStyles';
 import DateTimePicker from '@react-native-community/datetimepicker';
-//import { usersQuery } from '../../Utils/GQL/clients';
 import { UserInputType } from '../../Utils/GQL/types';
 import {
   checkEmailFormat,
@@ -12,25 +11,24 @@ import {
   checkBirthDate,
   checkName
 } from '../../Utils/InputValidation';
-//import { styles } from './UsersStyles';
 
-interface AddUsersPageProps { }
 interface AddUsersPageState {
   user: UserInputType,
-  show: boolean,
+  showDatePicker: boolean,
   date: Date,
   isLoading: boolean,
   errorMessage: string,
   birthDateButtonTitle: string
 }
 
-class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>{
+class AddUsersPage extends React.Component<{}, AddUsersPageState>{
 
-  constructor(props: AddUsersPageProps) {
+  constructor(props: {}) {
+
     super(props);
     this.state = {
       user: { name: '', phone: '', email: '', role: '', birthDate: '', password: '' },
-      show: false,
+      showDatePicker: false,
       date: new Date(),
       isLoading: false,
       errorMessage: "",
@@ -39,8 +37,6 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
   }
 
   private handleAddUser = () => {
-
-    console.log("Enviar clicked");
 
     if (this.state.isLoading) {
       return;
@@ -64,23 +60,25 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
       return;
     }
     else{
+
       this.setState({errorMessage: ""});
     }
   }
 
   private showDatePicker = () => {
-    this.setState({ show: true });
+
+    this.setState({ showDatePicker: true });
   }
 
-  private onDateChange = (event: Event, selectedDate?: Date | undefined) => {
-    //console.log(selectedDate);
+  private handleDateChange = (event: Event, selectedDate?: Date) => {
+
     const currentDate = selectedDate || this.state.date;
     const formattedDate = this.currentDateFormatted(currentDate);
 
     this.setState({
       date: currentDate,
       birthDateButtonTitle: formattedDate,
-      show: false
+      showDatePicker: false
     });
   }
 
@@ -93,7 +91,8 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     return day+"/"+month+"/"+year;
   }
 
-  private onNameChange = (value: string) => {
+  private handleNameChange = (value: string) => {
+
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
@@ -103,7 +102,8 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     });
   }
 
-  private onEmailChange = (value: string) => {
+  private handleEmailChange = (value: string) => {
+
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
@@ -113,7 +113,8 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     });
   }
 
-  private onPasswordChange = (value: string) => {
+  private handlePasswordChange = (value: string) => {
+
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
@@ -123,7 +124,8 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     });
   }
 
-  private onPhoneChange = (value: string) => {
+  private handlePhoneChange = (value: string) => {
+
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
@@ -136,7 +138,8 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     });
   }
 
-  private onRolechange = (value: string) => {
+  private handleRolechange = (value: string) => {
+
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
@@ -160,25 +163,25 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
           <View style={styles.inputNameView}>
             <Text style={styles.inputName}>Nome</Text>
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.onNameChange} />
+          <TextInput style={styles.textInput} onChangeText={this.handleNameChange} />
 
           <View style={styles.inputNameView}>
             <Text style={styles.inputName}>E-mail</Text>
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.onEmailChange}
+          <TextInput style={styles.textInput} onChangeText={this.handleEmailChange}
           />
 
           <View style={styles.inputNameView}>
             <Text style={styles.inputName}>Senha</Text>
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.onPasswordChange}
+          <TextInput style={styles.textInput} onChangeText={this.handlePasswordChange}
             secureTextEntry={true}
           />
 
           <View style={styles.inputNameView}>
             <Text style={styles.inputName}>Telefone</Text>
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.onPhoneChange}
+          <TextInput style={styles.textInput} onChangeText={this.handlePhoneChange}
             value={this.state.user.phone} />
 
 
@@ -187,7 +190,7 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
             <View style={{ marginTop: styles.inputName.marginTop }}>
               <Button onPress={this.showDatePicker} title={this.state.birthDateButtonTitle} />
             </View>
-            {this.state.show && (
+            {this.state.showDatePicker && (
               <DateTimePicker
                 testID="dateTimePicker"
                 timeZoneOffsetInMinutes={0}
@@ -195,7 +198,7 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
                 maximumDate={new Date()}
                 minimumDate={new Date(1910, 1)}
                 display="default"
-                onChange={this.onDateChange}
+                onChange={this.handleDateChange}
               />
             )}
 
@@ -204,7 +207,7 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
           <View style={styles.inputNameView}>
             <Text style={styles.inputName}>Role</Text>
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.onRolechange}
+          <TextInput style={styles.textInput} onChangeText={this.handleRolechange}
           />
 
           <TouchableOpacity style={styles.button} onPress={this.handleAddUser}>

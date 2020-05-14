@@ -55,6 +55,7 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
       }));
 
     }).catch((erro) => {
+
       console.log(erro);
     })
   }
