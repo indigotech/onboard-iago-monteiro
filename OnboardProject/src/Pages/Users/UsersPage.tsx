@@ -56,6 +56,24 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
     })
   }
 
+  private handleGetUser = (id:string) => {
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'UserDetails',
+        passProps:{
+          id:id
+        },
+        options: {
+          topBar: {
+            title: {
+              text: 'Detalhes'
+            }
+          }
+        }
+      }
+    })
+  }
+
   private handleAddUser = () => {
 
     Navigation.push(this.props.componentId, {
@@ -76,12 +94,11 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
     const usersData = this.state.users.map((user) => {
       return (
-        <View key={user.id} style={styles.userContainer}>
-          <Text style={styles.sectionHeader}>{user.role} : {user.name}</Text>
+        <TouchableOpacity key={user.id} style={styles.userContainer}
+          onPress={this.handleGetUser.bind(this,user.id)}>
+          <Text style={styles.sectionHeader}>{user.name}</Text>
           <Text style={styles.userInfo}> {user.email}</Text>
-          <Text style={styles.userInfo}>{user.birthDate}</Text>
-          <Text style={styles.userInfo}>{user.phone}</Text>
-        </View>
+        </TouchableOpacity>
       )
     });
 
