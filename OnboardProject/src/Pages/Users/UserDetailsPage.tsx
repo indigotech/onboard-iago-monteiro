@@ -39,8 +39,8 @@ class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>
 
     return (
       <View style={styles.userContainer}>
-        <Text style={styles.sectionHeader}>{this.state.user?.role + ":"
-          || ""}{this.state.user?.name || ""}</Text>
+        <Text style={styles.sectionHeader}>{(this.state.user?.role || "") + ":"}
+          {this.state.user?.name || ""}</Text>
         <Text style={styles.userInfo}> {this.state.user?.email || ""}</Text>
         <Text style={styles.userInfo}> {this.state.user?.birthDate || ""}</Text>
         <Text style={styles.userInfo}> {this.state.user?.phone || ""}</Text>

@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         shadowOpacity: 1.0,
         borderRadius:10,
-        marginBottom:15,
+        marginTop:15,
         marginHorizontal: '10%'
     },
     loadMoreButton: {
