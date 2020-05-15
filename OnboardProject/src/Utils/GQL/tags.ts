@@ -19,10 +19,7 @@ export const usersQuery =
           nodes{
             id
             name
-            phone
-            birthDate
             email
-            role
           }
           count
           pageInfo{
@@ -41,3 +38,15 @@ export const createUsersMutation =
           name
         }
       }`;
+
+export const getUserQuery =
+  gql`query user($id: ID!){
+    user(id:$id){
+      name
+      phone
+      birthDate
+      email
+      role
+    }
+  }
+  `;
