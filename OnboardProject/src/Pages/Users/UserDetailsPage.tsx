@@ -1,9 +1,9 @@
 import React from 'react';
-import {getUser} from '../../Utils/GQL/getUser';
+import {getUser} from '../../utils/gql/get-user';
 import { styles } from './UsersStyles';
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
-import { UserDetailsType } from 'src/Utils/GQL/types';
-import {UserDetails} from '../../Components/UserDetails/UserDetails';
+import { UserDetailsType } from 'src/utils/gql/types';
+import {UserDetails} from '../../components/user-details/UserDetails';
 
 interface UserDetailsProps {
   id:string

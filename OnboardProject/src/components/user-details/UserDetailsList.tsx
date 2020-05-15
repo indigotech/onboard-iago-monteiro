@@ -1,6 +1,6 @@
 import {StyledTouchableOpacity, StyledSectionHeader, StyledUserInfo} from './styledComponents';
 import React from 'react';
-import { UserType } from 'src/Utils/GQL/types';
+import { UserType } from 'src/utils/gql/types';
 import { Navigation } from 'react-native-navigation';
 
 interface UserDetailsListProps {

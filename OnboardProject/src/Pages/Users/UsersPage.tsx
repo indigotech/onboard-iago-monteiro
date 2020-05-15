@@ -1,10 +1,11 @@
 import { View, Text, ScrollView, Alert } from 'react-native';
 import React from 'react';
-import { getUsers } from '../../Utils/GQL/getUsers';
-import { UserType } from '../../Utils/GQL/types';
+import { getUsers } from '../../utils/gql/get-users';
+import { UserType } from '../../utils/gql/types';
 import { styles, getLoadMoreButtonColor } from './UsersStyles';
-import {UserDetailsList} from '../../Components/UserDetails/UserDetailsList';
-import {AddUserButton} from '../../Components/Floating Action Button/AddUserButton';
+import {UserDetailsList} from '../../components/user-details/UserDetailsList';
+import {AddUserButton} from '../../components/floating-action-button/AddUserButton';
+import { Navigation } from 'react-native-navigation';
 
 interface UsersPageState {
   users: UserType[],
@@ -20,6 +21,7 @@ interface UsersPageProps {
 class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
   constructor(props: UsersPageProps) {
+    
     super(props);
     this.state = {
       users: [],
@@ -27,8 +29,6 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
       usersCount: 0,
       isLastPage: false
     }
-
-    this.fetchData();
   }
 
   private fetchData = () => {
@@ -57,6 +57,26 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
     })
   }
 
+  componentDidMount = () => {
+    this.fetchData();
+  }
+
+  private handleAddUser = () => {
+
+    Navigation.push(this.props.componentId, {
+      component: {
+        name: 'AddUsers',
+        options: {
+          topBar: {
+            title: {
+              text: 'Cadastrar Novo usuário'
+            }
+          }
+        }
+      }
+    })
+  }
+
   render() {
 
     const usersData = this.state.users.map((user) => {
@@ -77,7 +97,7 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
             Load More
           </Text>
         </ScrollView>
-        <AddUserButton componentId={this.props.componentId}></AddUserButton>
+        <AddUserButton navigateFunction={this.handleAddUser}></AddUserButton>
       </View>
     );
   }

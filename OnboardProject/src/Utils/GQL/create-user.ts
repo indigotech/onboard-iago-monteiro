@@ -1,4 +1,4 @@
-import { retrieveData } from '../LocalStorage';
+import { retrieveData } from '../local-storage';
 import {clientWithAuth} from './clients';
 import {createUsersMutation} from './tags';
 import { UserInputType, createUserResponseType } from './types';

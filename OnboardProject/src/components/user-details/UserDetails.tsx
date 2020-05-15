@@ -1,6 +1,6 @@
 import {StyledView, StyledSectionHeader, StyledUserInfo} from './styledComponents';
 import React from 'react';
-import { UserDetailsType } from 'src/Utils/GQL/types';
+import { UserDetailsType } from 'src/utils/gql/types';
 
 
 interface UserDetailsProps {
