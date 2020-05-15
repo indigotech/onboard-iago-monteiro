@@ -11,20 +11,23 @@ interface UserDetailsState {
   user: UserDetailsType
 }
 class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>{
+  
   constructor(props : UserDetailsProps){
     super(props);
     this.state = {
       user:undefined
     }
+  }
 
+  componentDidMount = () => {
     this.fetchUser();
   }
 
   private fetchUser = () => {
     getUser(this.props.id).then((result) => {
-      console.log(result.data.user);
+      
       if(result.data){
-        console.log("Settar user");
+  
         this.setState({
           user: result.data.user
         })
@@ -32,9 +35,11 @@ class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>
 
     }).catch((erro) => {
 
-      Alert.alert("Houve um erro para obter usuário", JSON.stringify(erro));
+      const message = erro.graphQLErrors?.[0]?.message || erro.netwokError?.message;
+      Alert.alert("Houve um erro para obter usuário", message);
     });
   }
+  
   render() {
 
     return (
