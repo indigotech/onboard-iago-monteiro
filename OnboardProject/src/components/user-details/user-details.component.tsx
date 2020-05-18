@@ -1,4 +1,4 @@
-import {StyledView, StyledSectionHeader, StyledUserInfo} from './styledComponents';
+import {StyledView, StyledSectionHeader, StyledUserInfo} from './user-details.style';
 import React from 'react';
 import { UserDetailsType } from 'src/utils/gql/types';
 

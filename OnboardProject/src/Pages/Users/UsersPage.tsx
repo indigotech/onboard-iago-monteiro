@@ -3,8 +3,8 @@ import React from 'react';
 import { getUsers } from '../../utils/gql/get-users';
 import { UserType } from '../../utils/gql/types';
 import { styles, getLoadMoreButtonColor } from './UsersStyles';
-import {UserDetailsList} from '../../components/user-details/UserDetailsList';
-import {AddUserButton} from '../../components/floating-action-button/AddUserButton';
+import {UserDetailsList} from '../../components/user-details/user-details-list.component';
+import {AddUserButton} from '../../components/atomic/floating-action-button/floating-action-button.component';
 import { Navigation } from 'react-native-navigation';
 
 interface UsersPageState {
