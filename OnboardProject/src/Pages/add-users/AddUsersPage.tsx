@@ -1,9 +1,9 @@
 import { View, Text, TextInput, TouchableOpacity, Button, ScrollView, Alert } from 'react-native';
 import React from 'react';
-import { styles, getFormButtonTextAndColor } from '../GlobalStyles';
+import { styles, getFormButtonTextAndColor } from '../global-styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createUser } from '../../Utils/GQL/createUser';
-import { UserInputType } from '../../Utils/GQL/types';
+import { createUser } from '../../utils/gql/create-user';
+import { UserInputType } from '../../utils/gql/types';
 import {
   checkEmailFormat,
   checkPasswordFormat,
@@ -11,7 +11,7 @@ import {
   checkPhoneFormat,
   checkBirthDate,
   checkName
-} from '../../Utils/InputValidation';
+} from '../../utils/input-validation';
 import { Navigation } from 'react-native-navigation';
 
 interface AddUsersPageProps {

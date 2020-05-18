@@ -1,4 +1,4 @@
-import { retrieveData } from '../LocalStorage';
+import { retrieveData } from '../local-storage';
 import {clientWithAuth} from './clients';
 import {getUserQuery} from './tags';
 import { GetUserResponseType } from './types';

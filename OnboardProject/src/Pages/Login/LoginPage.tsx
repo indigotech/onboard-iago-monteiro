@@ -5,13 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { client } from '../../Utils/GQL/clients';
-import { storeData } from '../../Utils/LocalStorage';
+import { client } from '../../utils/gql/clients';
+import { storeData } from '../../utils/local-storage';
 import { Navigation } from 'react-native-navigation';
-import { styles, getFormButtonTextAndColor } from '../GlobalStyles';
-import { LoginResponse} from '../../Utils/GQL/types';
-import { loginMutation } from '../../Utils/GQL/tags';
-import {checkEmailFormat, checkPasswordFormat} from '../../Utils/InputValidation';
+import { styles, getFormButtonTextAndColor } from '../global-styles';
+import { LoginResponse} from '../../utils/gql/types';
+import { loginMutation } from '../../utils/gql/tags';
+import {checkEmailFormat, checkPasswordFormat} from '../../utils/input-validation';
 
 interface LoginState {
   email: string,

@@ -1,4 +1,4 @@
-import { retrieveData } from '../LocalStorage';
+import { retrieveData } from '../local-storage';
 import {clientWithAuth} from './clients';
 import {usersQuery} from './tags';
 import { PaginatedUsersType } from './types';

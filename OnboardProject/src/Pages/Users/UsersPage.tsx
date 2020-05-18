@@ -1,8 +1,10 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import React from 'react';
-import { getUsers } from '../../Utils/GQL/getUsers';
-import { UserType } from '../../Utils/GQL/types';
+import { getUsers } from '../../utils/gql/get-users';
+import { UserType } from '../../utils/gql/types';
 import { styles, getLoadMoreButtonColor } from './UsersStyles';
+import {UserDetailsList} from '../../components/user-details/UserDetailsList';
+import {AddUserButton} from '../../components/floating-action-button/AddUserButton';
 import { Navigation } from 'react-native-navigation';
 
 interface UsersPageState {
@@ -19,6 +21,7 @@ interface UsersPageProps {
 class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
   constructor(props: UsersPageProps) {
+    
     super(props);
     this.state = {
       users: [],
@@ -26,8 +29,6 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
       usersCount: 0,
       isLastPage: false
     }
-
-    this.fetchData();
   }
 
   private fetchData = () => {
@@ -56,22 +57,8 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
     })
   }
 
-  private handleGetUser = (id:string) => {
-    Navigation.push(this.props.componentId, {
-      component: {
-        name: 'UserDetails',
-        passProps:{
-          id:id
-        },
-        options: {
-          topBar: {
-            title: {
-              text: 'Detalhes'
-            }
-          }
-        }
-      }
-    })
+  componentDidMount = () => {
+    this.fetchData();
   }
 
   private handleAddUser = () => {
@@ -94,17 +81,14 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
     const usersData = this.state.users.map((user) => {
       return (
-        <TouchableOpacity key={user.id} style={styles.userContainer}
-          onPress={this.handleGetUser.bind(this,user.id)}>
-          <Text style={styles.sectionHeader}>{user.name}</Text>
-          <Text style={styles.userInfo}> {user.email}</Text>
-        </TouchableOpacity>
+        <UserDetailsList key={user.id} user={user} componentId={this.props.componentId}></UserDetailsList>
       )
     });
 
     const loadMoreButtonColor = getLoadMoreButtonColor(this.state.isLastPage);
 
     return (
+
       <View style={{flex:1}}>
 
         <ScrollView>
@@ -113,20 +97,9 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
             Load More
           </Text>
         </ScrollView>
-        <View>
-          <TouchableOpacity style={styles.TouchableOpacityStyle} onPress={this.handleAddUser}>
-            <Image source={{
-              uri: 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_icon.png',
-            }}
-              style={styles.FloatingButtonStyle}
-            />
-          </TouchableOpacity>
-        </View>
-
+        <AddUserButton navigateFunction={this.handleAddUser}></AddUserButton>
       </View>
-
     );
-
   }
 }
 
