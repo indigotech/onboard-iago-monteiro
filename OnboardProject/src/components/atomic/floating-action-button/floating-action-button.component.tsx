@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacityStyled, ImageStyled} from './styled-components';
+import {TouchableOpacityStyled, ImageStyled} from './floating-action-button.component.style';
 
 import { View } from 'react-native';
 

@@ -3,7 +3,7 @@ import {getUser} from '../../utils/gql/get-user';
 import { styles } from './UsersStyles';
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { UserDetailsType } from 'src/utils/gql/types';
-import {UserDetails} from '../../components/user-details/UserDetails';
+import {UserDetails} from '../../components/user-details/user-details.component';
 
 interface UserDetailsProps {
   id:string
@@ -27,13 +27,13 @@ class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>
   }
 
   private fetchUser = () => {
+    
     getUser(this.props.id).then((result) => {
-      
+ 
       if(result.data){
   
         this.setState({
-          user: result.data.user,
-          carregando:false
+          user: result.data.user
         })
       }
 
@@ -41,6 +41,10 @@ class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>
 
       const message = erro.graphQLErrors?.[0]?.message || erro.netwokError?.message;
       Alert.alert("Houve um erro para obter usuário", message);
+    }).finally(() => {
+      this.setState({
+        carregando:false
+      });
     });
   }
   

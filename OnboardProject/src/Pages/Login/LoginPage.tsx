@@ -1,24 +1,28 @@
 import React from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableOpacity,
 } from 'react-native';
 import { client } from '../../utils/gql/clients';
 import { storeData } from '../../utils/local-storage';
 import { Navigation } from 'react-native-navigation';
-import { styles, getFormButtonTextAndColor } from '../global-styles';
+import { styles} from '../global-styles';
 import { LoginResponse} from '../../utils/gql/types';
 import { loginMutation } from '../../utils/gql/tags';
-import {checkEmailFormat, checkPasswordFormat} from '../../utils/input-validation';
+import PageTitle from '../../components/atomic/atm.page-title/page-title.component';
+import FormInput from '../../components/atomic/mol.form-input/form-input.component';
+import InputErrorLabel from '../../components/atomic/atm.form-input-error/form-input-error.component';
+import Button from '../../components/atomic/atm.button/button.component';
+import {email, password} from '../../utils/input-types';
 
 interface LoginState {
   email: string,
   password: string,
-  errorMessage: string,
-  hasErrorMessage: boolean,
-  isLoading: boolean
+  
+  hasEmailError: boolean,
+  hasPasswordError: boolean,
+  
+  isLoading: boolean,
+  responseErrorMessage: string,
 }
 
 interface LoginPageProps {
@@ -32,9 +36,12 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
     this.state = {
       email: '',
       password: '',
-      errorMessage: '',
-      hasErrorMessage: false,
-      isLoading: false
+ 
+      hasEmailError: false,
+      hasPasswordError: false,
+ 
+      isLoading: false,
+      responseErrorMessage: "",
     };
   }
 
@@ -44,16 +51,17 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
       return;
     }
 
-    const invalidEmail = checkEmailFormat(this.state.email);
-    const invalidPassword = checkPasswordFormat(this.state.password);
-
-    if(invalidEmail || invalidPassword){
-      this.setState({hasErrorMessage: true, errorMessage: (invalidEmail || invalidPassword || "")});
-
+    this.setState({ 
+      responseErrorMessage: ""
+    });
+    
+    if(this.state.hasPasswordError || this.state.hasEmailError){
       return;
     }
 
-    this.setState({ isLoading: true });
+    this.setState({ 
+      isLoading: true
+    });
     
     //Parâmetros da mutation
     const login = loginMutation;
@@ -68,7 +76,9 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
       const token = result.data?.login.token;
       storeData("AUTH_TOKEN", token);
 
-      this.setState({ hasErrorMessage: false, errorMessage: "" });
+      this.setState({  
+        responseErrorMessage: "" 
+      });
 
       Navigation.push(this.props.componentId, {
         component: {
@@ -86,46 +96,51 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
     }).catch((error) => {
       
       const errorMessage = error.graphQLErrors?.[0]?.message || "Houve um erro. Tente novamente.";
-      console.log(error.graphQLErrors?.[0]?.message);
-    
-      this.setState({ hasErrorMessage: true, errorMessage: errorMessage });
+      this.setState({ responseErrorMessage: errorMessage });
     
     }).finally(() => {
       this.setState({ isLoading: false });
     });
   }
 
-  onEmailChange = (value:string) => this.setState({ email: value });
-  onPasswordChange = (value:string) => this.setState({ password: value });
+  handleEmailChange = (value: string, hasError: boolean) => {
+
+    this.setState({ email: value });
+    this.setState({ hasEmailError: hasError });
+  }
+
+  handlePasswordChange = (value: string, hasError: boolean) => {
+
+    this.setState({ password: value });
+    this.setState({ hasPasswordError: hasError });
+  }
 
   render() {
 
-    const {text, color} = getFormButtonTextAndColor(this.state.isLoading);
-    let buttonTextStyles = [color,styles.buttonText];
-
     return (
       <View style={styles.container}>
-        <Text style={styles.pageTitle}>Bem-vindo à Taqtile!</Text>
-        <View style={styles.inputNameView}>
-          <Text style={styles.inputName}>E-mail</Text>
-        </View>
-        <TextInput style={styles.textInput} onChangeText={this.onEmailChange} />
-        <View style={styles.inputNameView}>
-          <Text style={styles.inputName}>Senha</Text>
-        </View>
-        <TextInput style={styles.textInput} onChangeText={this.onPasswordChange}
-          secureTextEntry={true} />
-        <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
-          <Text style={buttonTextStyles}>
-            {text}
-          </Text>
-        </TouchableOpacity>
+      
+        <PageTitle>Bem-vindo à Taqtile!</PageTitle>
 
-        <View style={{ width: '80%', alignItems: 'center' }}>
-          <Text style={styles.feedbackMessageError}>
-            {this.state.errorMessage}
-          </Text>
+        <FormInput 
+          handler={this.handleEmailChange}
+          label={email.label}
+          validator={email.validator}
+        />
+
+        <FormInput 
+          label={password.label}
+          validator={password.validator}
+          handler={this.handlePasswordChange}
+          isPassword={true}
+        />
+
+        <Button text='Entrar' handleFunction={this.handleLogin} isLoading={this.state.isLoading}/>
+        
+        <View style={{width:'80%'}}>
+          <InputErrorLabel>{this.state.responseErrorMessage}</InputErrorLabel>
         </View>
+        
       </View>
     );
   }

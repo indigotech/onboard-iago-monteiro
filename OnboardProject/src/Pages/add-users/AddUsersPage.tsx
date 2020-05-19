@@ -1,18 +1,21 @@
-import { View, Text, TextInput, TouchableOpacity, Button, ScrollView, Alert } from 'react-native';
+import { 
+  View, 
+  ScrollView, 
+  Alert, 
+  Platform, 
+  KeyboardAvoidingView 
+} from 'react-native';
 import React from 'react';
-import { styles, getFormButtonTextAndColor } from '../global-styles';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { styles } from '../global-styles';
+import DatePicker from '../../components/atomic/atm.date-picker/atm.date-picker.component';
 import { createUser } from '../../utils/gql/create-user';
 import { UserInputType } from '../../utils/gql/types';
-import {
-  checkEmailFormat,
-  checkPasswordFormat,
-  checkRole,
-  checkPhoneFormat,
-  checkBirthDate,
-  checkName
-} from '../../utils/input-validation';
+import * as types from '../../utils/input-types';
 import { Navigation } from 'react-native-navigation';
+import FormInput from '../../components/atomic/mol.form-input/form-input.component';
+import ButtonEnviar from '../../components/atomic/atm.button/button.component';
+import CentralizedError from '../../components/atomic/atm.form-input-error/form-input-centralized-error.component';
+
 
 interface AddUsersPageProps {
   componentId: string
@@ -20,11 +23,16 @@ interface AddUsersPageProps {
 
 interface AddUsersPageState {
   user: UserInputType,
-  showDatePicker: boolean,
-  date: Date,
   isLoading: boolean,
-  errorMessage: string,
-  birthDateButtonTitle: string
+
+  responseErrorMessage: string,
+
+  hasNameError: boolean,
+  hasPasswordError: boolean,
+  hasEmailError: boolean,
+  hasPhoneError: boolean,
+  hasRoleError: boolean,
+  hasBirthDateError: boolean,
 }
 
 class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>{
@@ -34,33 +42,37 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     super(props);
     this.state = {
       user: { name: '', phone: '', email: '', role: '', birthDate: '', password: '' },
-      showDatePicker: false,
-      date: new Date(),
       isLoading: false,
-      errorMessage: "",
-      birthDateButtonTitle: "Data de nascimento"
+      
+      responseErrorMessage: "",
+      
+      hasNameError: false,
+      hasPasswordError: false,
+      hasEmailError: false,
+      hasPhoneError: false,
+      hasRoleError: false,
+      hasBirthDateError: false,
     }
   }
 
   private handleAddUser = () => {
-
-    if (this.state.isLoading) {
+    
+    if(this.state.isLoading){
       return;
     }
 
-    const error = this.getHasError();
+    this.setState({ 
+      responseErrorMessage: ""
+    });
 
-    if(error){
-
-      this.setState({
-        errorMessage: error
-      });
-
+    const hasAnError = (this.state.hasBirthDateError || this.state.hasEmailError || this.state.hasNameError
+      || this.state.hasPhoneError || this.state.hasPasswordError || this.state.hasBirthDateError);
+    
+    if(hasAnError){
       return;
     }
 
-    this.setState({
-      errorMessage: "",
+    this.setState({ 
       isLoading: true
     });
 
@@ -88,14 +100,15 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
 
         if(result.errors?.[0]?.message)
           this.setState({
-            errorMessage: result.errors?.[0]?.message
+            responseErrorMessage: result.errors?.[0]?.message
           });
       }
 
     }).catch((erro) => {
-
+      
       this.setState({
-        errorMessage: erro.graphQLErrors?.[0]?.message || "Houve um erro"
+        responseErrorMessage: erro.graphQLErrors?.[0]?.message || 
+          erro.errors?.[0]?.message|| "Houve um erro"
       });
 
     }).finally(() => {
@@ -107,91 +120,64 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
     });
   }
 
-  private getHasError = () => {
-
-    const invalidEmail = checkEmailFormat(this.state.user.email);
-    const invalidPassword = checkPasswordFormat(this.state.user.password);
-    const invalidRole = checkRole(this.state.user.role);
-    const invalidPhone = checkPhoneFormat(this.state.user.phone);
-    const invalidBirthDate = checkBirthDate(this.state.date);
-    const invalidName = checkName(this.state.user.name);
-
-    return (invalidName || invalidEmail || invalidPassword || invalidPhone
-        || invalidBirthDate || invalidRole || "");
-  }
-
-  private showDatePicker = () => {
-
-    this.setState({ showDatePicker: true });
-  }
-
-  private handleDateChange = (event: Event, selectedDate?: Date) => {
-
-    const currentDate = selectedDate || this.state.date;
-    const formattedDateRequest = this.currentDateFormatted(currentDate);
-    const formattedDateButton = this.currentDateFormatted(currentDate, true);
-
+  private handleDateChange = (value: string, hasBirthDateError: boolean) => {
+    
     this.setState((prevState) => {
       let user = {
-        ...prevState.user,
-        birthDate: formattedDateRequest
+      ...prevState.user,
+      birthDate: value
       }
       return {
-        date: currentDate,
-        birthDateButtonTitle: formattedDateButton,
-        showDatePicker: false,
-        user: user
+        hasBirthDateError,
+        user
       }
     });
+
   }
 
-  private currentDateFormatted = (date:Date, button:boolean = false) => {
-
-    const day  = date.getDate().toString().padStart(2, '0');
-    const month  = (date.getMonth()+1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-
-    if(button){
-      return day+"/"+month+"/"+year;
-    }
-
-    return year+"-"+month+"-"+day;
-  }
-
-  private handleNameChange = (value: string) => {
+  private handleNameChange = (value: string, hasNameError: boolean) => {
 
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
         name: value
       }
-      return { user };
+      return { 
+        hasNameError,
+        user 
+      };
     });
   }
 
-  private handleEmailChange = (value: string) => {
+  private handleEmailChange = (value: string, hasEmailError: boolean) => {
 
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
         email: value
       }
-      return { user };
+      return {
+        hasEmailError,
+        user 
+      };
     });
   }
 
-  private handlePasswordChange = (value: string) => {
+  private handlePasswordChange = (value: string, hasPasswordError: boolean) => {
 
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
         password: value
       }
-      return { user };
+      return {
+        hasPasswordError, 
+        user 
+      };
     });
   }
 
-  private handlePhoneChange = (value: string) => {
+  private handlePhoneChange = (value: string, hasPhoneError: boolean) => {
 
     this.setState((prevState) => {
       let user = {
@@ -200,97 +186,77 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
       }
 
       return {
-        user: user,
+        hasPhoneError,
+        user,
       };
     });
   }
 
-  private handleRolechange = (value: string) => {
+  private handleRoleChange = (value: string, hasRoleError: boolean) => {
 
     this.setState((prevState) => {
       let user = {
         ...prevState.user,
         role: value
       }
-      return { user };
+      return {
+        hasRoleError,
+        user 
+      };
     });
   }
 
-
   render() {
-
-    const { text, color } = getFormButtonTextAndColor(this.state.isLoading);
-    let buttonTextStyles = [color, styles.buttonText];
-
+    
     return (
-      <ScrollView style={{backgroundColor:styles.container.backgroundColor}}
-        keyboardShouldPersistTaps={'handled'}>
-        <View style={styles.container}>
+      <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      style={[styles.container]}
+      >
+        <ScrollView style={{width:'100%'}}>
+          <View style={styles.container}>
+            
+            <FormInput 
+              handler={this.handleNameChange}
+              label={types.name.label}
+              validator={types.name.validator}
+            />
 
-          <View style={styles.inputNameView}>
-            <Text style={styles.inputName}>Nome</Text>
+            <FormInput 
+            handler={this.handleEmailChange}
+            label={types.email.label}
+            validator={types.email.validator}
+            />
+
+            <FormInput 
+              handler={this.handlePasswordChange}
+              label={types.password.label}
+              validator={types.password.validator}
+              
+              isPassword={true}
+            />
+
+            <FormInput 
+              handler={this.handlePhoneChange}
+              label={types.phone.label}
+              validator={types.phone.validator}
+            />
+            
+            <DatePicker handler={this.handleDateChange}/>
+
+            <FormInput 
+            handler={this.handleRoleChange}
+            label={types.role.label}
+            validator={types.role.validator}
+            />
+
+            <ButtonEnviar text='Entrar' handleFunction={this.handleAddUser} isLoading={this.state.isLoading}/>
+            
+            <CentralizedError>{this.state.responseErrorMessage}</CentralizedError>
+
           </View>
-          <TextInput style={styles.textInput} onChangeText={this.handleNameChange} />
-
-          <View style={styles.inputNameView}>
-            <Text style={styles.inputName}>E-mail</Text>
-          </View>
-          <TextInput style={styles.textInput} onChangeText={this.handleEmailChange}
-          />
-
-          <View style={styles.inputNameView}>
-            <Text style={styles.inputName}>Senha</Text>
-          </View>
-          <TextInput style={styles.textInput} onChangeText={this.handlePasswordChange}
-            secureTextEntry={true}
-          />
-
-          <View style={styles.inputNameView}>
-            <Text style={styles.inputName}>Telefone</Text>
-          </View>
-          <TextInput style={styles.textInput} onChangeText={this.handlePhoneChange}
-            value={this.state.user.phone} />
-
-
-          <View>
-
-            <View style={{ marginTop: styles.inputName.marginTop }}>
-              <Button onPress={this.showDatePicker} title={this.state.birthDateButtonTitle} />
-            </View>
-            {this.state.showDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                timeZoneOffsetInMinutes={0}
-                value={this.state.date}
-                maximumDate={new Date()}
-                minimumDate={new Date(1910, 1)}
-                display="default"
-                onChange={this.handleDateChange}
-              />
-            )}
-
-          </View>
-
-          <View style={styles.inputNameView}>
-            <Text style={styles.inputName}>Role</Text>
-          </View>
-          <TextInput style={styles.textInput} onChangeText={this.handleRolechange}
-          />
-
-          <TouchableOpacity style={styles.button} onPress={this.handleAddUser}>
-            <Text style={buttonTextStyles}>
-              {text}
-            </Text>
-          </TouchableOpacity>
-
-          <View style={{ width: '80%', alignItems: 'center' }}>
-            <Text style={styles.feedbackMessageError}>
-              {this.state.errorMessage}
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
-
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 }
