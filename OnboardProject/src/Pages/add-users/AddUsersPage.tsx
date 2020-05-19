@@ -105,9 +105,10 @@ class AddUsersPage extends React.Component<AddUsersPageProps, AddUsersPageState>
       }
 
     }).catch((erro) => {
-
+      
       this.setState({
-        responseErrorMessage: erro.graphQLErrors?.[0]?.message || "Houve um erro"
+        responseErrorMessage: erro.graphQLErrors?.[0]?.message || 
+          erro.errors?.[0]?.message|| "Houve um erro"
       });
 
     }).finally(() => {

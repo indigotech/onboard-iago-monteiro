@@ -2,10 +2,10 @@ import { View, Text, ScrollView, Alert } from 'react-native';
 import React from 'react';
 import { getUsers } from '../../utils/gql/get-users';
 import { UserType } from '../../utils/gql/types';
-import { styles, getLoadMoreButtonColor } from './UsersStyles';
 import {UserDetailsList} from '../../components/user-details/user-details-list.component';
 import {AddUserButton} from '../../components/atomic/floating-action-button/floating-action-button.component';
 import { Navigation } from 'react-native-navigation';
+import LoadMoreButton from '../../components/atomic/atm.button/button-load-more.component';
 
 interface UsersPageState {
   users: UserType[],
@@ -31,6 +31,7 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
     }
   }
 
+  //Ação do Botão Load More
   private fetchData = () => {
 
     if (this.state.isLastPage) {
@@ -43,7 +44,7 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
     getUsers(offset, limit).then((result) => {
 
       const currentUsers = this.state.users.concat(result.data.users.nodes);
-
+    
       this.setState((state) => ({
         users: currentUsers,
         usersCount: result.data.users.count,
@@ -53,7 +54,8 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
 
     }).catch((erro) => {
 
-      Alert.alert("Houve um erro para obter usuários", erro.graphQLErrors?.[0]?.message);
+      const error = erro.graphQLErrors?.[0]?.message;
+      Alert.alert("Houve um erro para obter usuários", error);
     })
   }
 
@@ -85,17 +87,13 @@ class UsersPage extends React.Component<UsersPageProps, UsersPageState> {
       )
     });
 
-    const loadMoreButtonColor = getLoadMoreButtonColor(this.state.isLastPage);
-
     return (
 
       <View style={{flex:1}}>
 
         <ScrollView>
           {usersData}
-          <Text onPress={this.fetchData} style={[styles.loadMoreButton, loadMoreButtonColor]}>
-            Load More
-          </Text>
+          <LoadMoreButton onPress={this.fetchData} isLastPage={this.state.isLastPage}/>
         </ScrollView>
         <AddUserButton navigateFunction={this.handleAddUser}></AddUserButton>
       </View>
