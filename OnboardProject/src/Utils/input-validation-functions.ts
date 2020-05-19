@@ -22,7 +22,7 @@ export const checkEmailFormat = (email: string): string => {
   return "Formato de e-mail inválido";
 }
 
-export const checkRole = (role: string): string => {
+export const checkRoleFormat = (role: string): string => {
   const roleString = role.toLowerCase();
   if (roleString === 'admin' || roleString === 'user') {
     return;
@@ -39,14 +39,14 @@ export const checkPhoneFormat = (phone: string): string => {
   }
 }
 
-export const checkBirthDate = (date: Date) => {
+export const checkBirthDateFormat = (date: Date) => {
   const thisYear = (new Date()).getFullYear();
   if (date.getFullYear() === thisYear) {
     return "Favor inserir uma data de nascimento válida.";
   }
 }
 
-export const checkName = (name:string) => {
+export const checkNameFormat = (name:string) => {
   if(name.length < 3){
     return "Nome curto demais";
   }

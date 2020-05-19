@@ -1,4 +1,4 @@
-import {LabelViewStyled, LabelTextStyled} from './form-input-label-component.style';
+import {LabelViewStyled, LabelTextStyled} from './form-input-label.component.style';
 import React from 'react';
 
 interface InputLabelProps {

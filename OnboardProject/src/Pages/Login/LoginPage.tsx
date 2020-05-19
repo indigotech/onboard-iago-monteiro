@@ -12,17 +12,17 @@ import PageTitle from '../../components/atomic/atm.page-title/page-title.compone
 import FormInput from '../../components/atomic/mol.form-input/form-input.component';
 import InputErrorLabel from '../../components/atomic/atm.form-input-error/form-input-error.component';
 import Button from '../../components/atomic/atm.button/button.component';
-import {checkEmailFormat, checkPasswordFormat} from '../../utils/input-validation-functions';
+import {email, password} from '../../utils/input-types';
 
 interface LoginState {
   email: string,
   password: string,
-  emailErrorMessage: string,
-  passwordErrorMessage: string,
+  
   hasEmailError: boolean,
   hasPasswordError: boolean,
+  
   isLoading: boolean,
-  responseErrorMessage: string
+  responseErrorMessage: string,
 }
 
 interface LoginPageProps {
@@ -40,57 +40,9 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
       hasEmailError: false,
       hasPasswordError: false,
  
-      emailErrorMessage:"",
-      passwordErrorMessage:"",
- 
       isLoading: false,
-      responseErrorMessage: ""
-
+      responseErrorMessage: "",
     };
-  }
-
-  private validateInputs = () => {
-
-    let hasError = false;
-
-    const invalidEmail = checkEmailFormat(this.state.email);
-
-    if(invalidEmail){
-      this.setState({
-        hasEmailError: true,
-        emailErrorMessage: invalidEmail
-      });
-
-      hasError = true;
-
-    } else{
-
-      this.setState({
-        hasEmailError: false,
-        emailErrorMessage: ""
-      });
-    }
-
-    const invalidPassword = checkPasswordFormat(this.state.password);
-
-    if(invalidPassword){
-      
-      this.setState({
-        hasPasswordError: true,
-        passwordErrorMessage: invalidPassword
-      });
-
-      hasError = true;
-
-    } else{
-
-      this.setState({
-        hasPasswordError: false,
-        passwordErrorMessage: ""
-      });
-    }
-
-    return hasError;
   }
 
   handleLogin = () => {
@@ -102,10 +54,8 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
     this.setState({ 
       responseErrorMessage: ""
     });
-
-    const invalidInputs = this.validateInputs();
     
-    if(invalidInputs){
+    if(this.state.hasPasswordError || this.state.hasEmailError){
       return;
     }
 
@@ -153,8 +103,17 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
     });
   }
 
-  handleEmailChange = (value:string) => this.setState({ email: value });
-  handlePasswordChange = (value:string) => this.setState({ password: value });
+  handleEmailChange = (value: string, hasError: boolean) => {
+
+    this.setState({ email: value });
+    this.setState({ hasEmailError: hasError });
+  }
+
+  handlePasswordChange = (value: string, hasError: boolean) => {
+
+    this.setState({ password: value });
+    this.setState({ hasPasswordError: hasError });
+  }
 
   render() {
 
@@ -164,17 +123,15 @@ class LoginPage extends React.Component<LoginPageProps, LoginState>{
         <PageTitle>Bem-vindo à Taqtile!</PageTitle>
 
         <FormInput 
-          onChange={this.handleEmailChange} 
-          label="e-mail" 
-          errorMessage={this.state.emailErrorMessage} 
-          hasError={this.state.hasEmailError}
+          handler={this.handleEmailChange}
+          label={email.label}
+          validator={email.validator}
         />
 
         <FormInput 
-          onChange={this.handlePasswordChange} 
-          label="senha" 
-          errorMessage={this.state.passwordErrorMessage} 
-          hasError={this.state.hasPasswordError}
+          label={password.label}
+          validator={password.validator}
+          handler={this.handlePasswordChange}
           isPassword={true}
         />
 

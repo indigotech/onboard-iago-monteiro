@@ -1,11 +1,13 @@
-import React from 'react';
-import {TextStyled} from './page-title.component.style';
+import styled from 'styled-components/native';
 
-function PageTitle (props: any) {
+const PageTitleStyled = styled.Text`
+    align-items: flex-start;
+    flex-direction: column;
+    color: #000000;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+`;
 
-    return(
-        <TextStyled>{props.children}</TextStyled>
-    );
-}
-
-export default PageTitle;
+export default PageTitleStyled;

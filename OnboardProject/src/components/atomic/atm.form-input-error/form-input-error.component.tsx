@@ -1,10 +1,10 @@
-import {ErrorTextStyled} from './form-input-error.component.style';
-import React from 'react';
+import styled from 'styled-components/native';
 
-function InputErrorLabel(props: any) {
-    return(
-    <ErrorTextStyled>{props.children}</ErrorTextStyled>
-    );
-}
+const ErrorTextStyled = styled.Text`
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: red;
+},`;
 
-export default InputErrorLabel;
+export default ErrorTextStyled;

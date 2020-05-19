@@ -4,7 +4,8 @@ import React from 'react';
 interface FormInputProps{
     onChange: (value:string) => void,
     isPassword?: boolean,
-    hasError: boolean
+    hasError: boolean,
+    onEndEditing: (e:any) => void
 }
 
 function FormInputField(props: FormInputProps){
@@ -13,6 +14,7 @@ function FormInputField(props: FormInputProps){
             hasError={props.hasError}
             onChangeText={props.onChange}
             secureTextEntry={props.isPassword}
+            onEndEditing={props.onEndEditing}
         />
     );
 }

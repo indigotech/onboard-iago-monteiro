@@ -27,8 +27,9 @@ class UserDetailsPage extends React.Component<UserDetailsProps,UserDetailsState>
   }
 
   private fetchUser = () => {
+    
     getUser(this.props.id).then((result) => {
-      console.log(result);
+ 
       if(result.data){
   
         this.setState({
